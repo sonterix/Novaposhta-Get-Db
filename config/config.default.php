@@ -23,4 +23,5 @@ $config['db']['password'] = '';
 $config['apiKey'] = '';
 
 // Methods list
-$config['list'] = ['getCities', 'getDepartments', 'getCargoTypes'];
+$config['list'] = ['getCities', 'getDepartments', 'getCargoTypes', 'getDeliveryTypes'];
+
