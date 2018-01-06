@@ -139,7 +139,51 @@ class NpModel
     }
 
     public function getCargoTypes(){
-        echo 'getCargoTypes';
+        // cURL
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'http://api.novaposhta.ua/v2.0/json/Common/getCargoTypes');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-type: application/json'
+        ]);
+
+        curl_setopt($ch, CURLOPT_POSTFIELDS,json_encode( [
+            "modelName" => "Common",
+            "calledMethod" => "getCargoTypes",
+            "apiKey" => $this->conf['apiKey']
+        ]));
+
+        $data = curl_exec($ch); 
+        curl_close($ch);
+
+        // get respons data
+        $data = json_decode($data, true);
+
+        // Work with db
+        $sqlCheckTable = $this->dbh->query("SHOW TABLES LIKE 'np_cargo_types'");
+
+        if($sqlCheckTable->rowCount()){
+            $this->dbh->query("TRUNCATE TABLE np_cargo_types"); 
+        } else {
+            $this->dbh->query("CREATE TABLE `np_cargo_types` (
+                `id` INT(6) NOT NULL AUTO_INCREMENT,
+                `description` VARCHAR(55) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+                `ref` VARCHAR(55) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+                `date` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY(`id`)
+            ) ENGINE = InnoDB");
+        }
+
+        // check data from respons
+        foreach($data['data'] as $value){
+            $sqlInsert = $this->dbh->prepare("INSERT INTO np_cargo_types (description, ref) VALUES(:description, :ref)");
+            $sqlInsert->execute([
+                ':description' => $value['Description'],
+                ':ref' => $value['Ref'],
+            ]);
+        }
+
         return true;
     }
 
