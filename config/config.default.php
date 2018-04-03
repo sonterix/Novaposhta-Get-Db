@@ -1,13 +1,5 @@
 <?php
 
-/** Before Start:
- * in comand lane "composer install"
- * add in vendor/composer/autoload_pse4.php :
- *      'app\\controller\\' => array($baseDir . '/src/controller'),    
- *      'app\\model\\' => array($baseDir . '/src/model')
- * this need for correct namespaces in project  
- */
-
 // Slim cfg
 $config['displayErrorDetails'] = false;
 $config['addContentLengthHeader'] = false;
